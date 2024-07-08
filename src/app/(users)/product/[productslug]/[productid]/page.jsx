@@ -38,20 +38,22 @@ import { IoHeartDislikeSharp } from "react-icons/io5";
 import ProductPage from "@/components/user/skeleton/ProductPage";
 
 const ProductInfo = ({ params }) => {
+  const id =  params.productid
   const dispatch = useDispatch();
-  const id = params.productid;
   const wishlist = useSelector((state) => state.wishlist);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const cart = useSelector((state) => state.cart);
   const [isInCart, setIsInCart] = useState(false);
-  const [reviewData, setReviewData] = useState({ rating: "", review: "" });
+  const [reviewData, setReviewData] = useState({ rating: "", review: "" ,productId:""});
   const [postReview, { isLoading: reviewLoading, isSuccess, isError }] =
-    usePostReviewMutation();
+  usePostReviewMutation();
   const { data, error, isLoading, refetch } = useGetProductsByIDQuery(id);
+  console.log(data?.response.allReviews);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setReviewData((prevData) => ({ ...prevData, [name]: value }));
   };
+  reviewData.productId= params.productid;
   const handleSubmit = async (e) => {
     e.preventDefault();
     const ratingValue = Number(reviewData.rating);
@@ -60,7 +62,7 @@ const ProductInfo = ({ params }) => {
       return;
     }
     try {
-      await postReview({ reviewData }).unwrap();
+      await postReview({productId:id, reviewData }).unwrap();
       console.log("Review posted successfully!");
       setReviewData({ rating: "", review: "" });
     } catch (error) {
