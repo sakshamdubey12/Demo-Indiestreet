@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware, combineReducers } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { authSlice } from "./slices/common/authSlice";
 import { VendorAPI } from "./slices/admin/GetAllVendor";
 import { BusinessCategory } from "./slices/admin/BusinessCategorySlice";
@@ -12,9 +12,10 @@ import sortReducer from "./slices/user/productFilterSortSlice";
 import cartReducer from "./slices/user/cartSlice";
 import wishlistReducer from "./slices/user/wishlistSlice";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import authReducer from './slices/vendor/vendorSlice';
-import productReducer from './slices/vendor/manageProduct';
+import storage from "redux-persist/lib/storage";
+import authDataReducer from "./slices/common/authSlice"; 
+import productReducer from "./slices/vendor/manageProduct";
 
 const applyMiddlewareConditionally = (middlewares) => {
   const isAuthEnabled = true;
@@ -58,15 +59,26 @@ const persistConfig = {
   key: "store",
   storage,
   whitelist: ["cart", "wishlist"],
-  blacklist:['_persist']
+  blacklist: ["_persist"],
 };
-const persistVendorConfig = {
-  key: 'root',
+
+const persistUserDataConfig = {
+  key: "userData",
   storage,
+  whitelist: ["userData", "isAuth"],
+  blacklist: ["_persist"],
 };
+
+const persistVendorConfig = {
+  key: "root",
+  storage,
+  blacklist: ["_persist", "loading", "error"],
+};
+
 const rootReducer = combineReducers({
   product: productReducer,
   dialog: dialogReducer,
+  authData: persistReducer(persistUserDataConfig, authDataReducer),
   auth: persistReducer(persistVendorConfig, authReducer),
   sort: sortReducer,
   cart: cartReducer,

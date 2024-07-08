@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-// Async thunk to handle vendor signup
 const base = process.env.NEXT_PUBLIC_BASE_URL
 export const vendorSignup = createAsyncThunk(
   'auth/vendorSignup',

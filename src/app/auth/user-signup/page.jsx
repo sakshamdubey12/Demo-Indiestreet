@@ -8,7 +8,11 @@ import { Toaster } from "@/components/ui/toaster";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { useRegisterUserMutation } from "@/redux/slices/common/authSlice";
+import {
+  useRegisterUserMutation,
+  setAuth,
+} from "@/redux/slices/common/authSlice";
+import { useDispatch } from "react-redux";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 const UserRegister = () => {
@@ -19,6 +23,7 @@ const UserRegister = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +68,8 @@ const UserRegister = () => {
       const userData = { fullname: fullName, email, phoneNumber, password };
       const response = await registerUser(userData).unwrap();
       toast({ title: response.message });
+      const { pass, ...data } = userData;
+      dispatch(setAuth({ isAuth: true, data }));
       Cookies.set("token", response.token, { expires: 7 });
       router.push("/");
     } catch (err) {

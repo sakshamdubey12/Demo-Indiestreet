@@ -13,8 +13,10 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { logout } from "@/redux/slices/common/authSlice";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export function Nav({ links, isCollapsed }) {
+  const dispatch = useDispatch()
   const segment = useSelectedLayoutSegment();
   const [isAuth, setIsAuth] = useState(false);
   const router = useRouter();
@@ -24,11 +26,12 @@ export function Nav({ links, isCollapsed }) {
     setIsAuth(authStatus);
   }, []);
 
+ 
   const handleLogout = () => {
-    logout();
-    setIsAuth(false);
+    dispatch(logout());
     router.push("/");
   };
+
 
   return (
     <TooltipProvider>
