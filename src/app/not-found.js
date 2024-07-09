@@ -6,7 +6,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen flex justify-center items-center flex-col">
       <div className="w-1/3">
-      <Image width={1000} height={1000} className="object-fill" src={img} />
+      <Image width={1000} height={1000} className="object-fill" src={img} alt="404" />
       </div>
       <h1>400 - Bad Request</h1>
       <p>

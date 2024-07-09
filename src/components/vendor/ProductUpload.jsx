@@ -16,6 +16,7 @@ import {
 } from "../ui/select";
 import { useGetProductCategoryQuery } from "@/redux/slices/admin/ProductCategorySlice";
 import { useUploadProductMutation } from "@/redux/slices/vendor/ProductUpload";
+import Image from "next/image";
 
 const ProductUpload = ({ onSuccess }) => {
   const { toast } = useToast();
@@ -185,7 +186,9 @@ const ProductUpload = ({ onSuccess }) => {
       <div className="flex flex-wrap">
         {images.map((image, index) => (
           <div key={index} className="relative m-2">
-            <img
+            <Image
+            height={1000}
+            width={1000}
               src={URL.createObjectURL(image)}
               alt="Preview"
               className="w-20 h-20 object-cover"

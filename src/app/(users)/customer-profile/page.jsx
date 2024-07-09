@@ -5,7 +5,7 @@ import { logout } from "@/redux/slices/common/authSlice";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
-const page = () => {
+const CustomerProfile = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const handleLogout = () => {
@@ -21,4 +21,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CustomerProfile;
