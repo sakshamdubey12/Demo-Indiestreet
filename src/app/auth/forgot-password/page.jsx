@@ -11,17 +11,20 @@ import { Toaster } from "@/components/ui/toaster";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { ArrowLeft, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const ForgotPassword = () => {
   const [password, setPassword] = useState("");
+  const router = useRouter();
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [otp, setOtp] = useState("");
   const { toast } = useToast();
   const [toggle, setToggle] = useState("number");
 
@@ -36,11 +39,12 @@ const ForgotPassword = () => {
   };
 
   const handlePhoneNumberChange = (value) => {
-    setPhoneNumber(value);
-    if (!/^\d+$/.test(value) && (value < 6000000000 || value > 9999999999)) {
+    if (!/^\d+$/.test(value)) {
       setPhoneNumber("");
     } else {
-      setPhoneNumber(value);
+      if (/^[0-9]/.test(value)) {
+        setPhoneNumber(value);
+      } else setPhoneNumber("");
     }
   };
 
@@ -49,8 +53,6 @@ const ForgotPassword = () => {
     if (phoneError) {
       alert("Please correct the phone number.");
     } else if (phoneNumber.length == 10 && phoneNumber != "") {
-      console.log(phoneNumber);
-      setPhoneNumber("");
       setToggle("otp");
     } else {
       toast({
@@ -58,6 +60,34 @@ const ForgotPassword = () => {
         description: "Phone Number required",
       });
     }
+  };
+
+  const handleOTPSubmit = (e) => {
+    e.preventDefault();
+    if (otp.length > 3) {
+      setToggle("password");
+      console.log(otp);
+    } else
+      toast({
+        variant: "destructive",
+        description: "Enter valid OTP!!",
+      });
+  };
+
+  const handlePasswordChange = (e) => {
+    e.preventDefault();
+    if (password === confirmPassword) {
+      {
+        toast({
+          description: "Password changed successfully!!",
+        });
+        router.push("/");
+      }
+    } else
+      toast({
+        variant: "destructive",
+        description: "Password doesn't match!!",
+      });
   };
 
   return (
@@ -68,7 +98,7 @@ const ForgotPassword = () => {
         </h1>
         {toggle === "number" ? (
           <>
-            <form onSubmit={handlePhoneNumberSubmit}>
+            <form onSubmit={handlePhoneNumberSubmit} className=" mb-3">
               <Label htmlFor="number">
                 Enter phone number to change password
               </Label>
@@ -88,45 +118,63 @@ const ForgotPassword = () => {
                 Submit
               </Button>
             </form>
-            <Link href="/auth">Back to login</Link>
+            <Link
+              href="/auth"
+              className="flex justify-center items-center w-fit text-blue-500 text-sm"
+            >
+              <ArrowLeft className="w-4 h-4 mr-0.5" />{" "}
+              <span>Back to login</span>
+            </Link>
           </>
         ) : toggle === "otp" ? (
           <>
-            <form>
+            <form onSubmit={handleOTPSubmit}>
               <Label htmlFor="otp">
-                OTP has been sent to the entered phone number
+                OTP has been sent to{" "}
+                <span className="text-blue-500">{phoneNumber}</span>
               </Label>
               <InputOTP
                 name="otp"
                 maxLength={4}
                 pattern={REGEXP_ONLY_DIGITS}
                 className="mb-2"
+                value={otp}
+                onChange={(value) => setOtp(value)}
               >
                 <InputOTPGroup>
                   <InputOTPSlot
-                    className="border-2 border-[#4e1b613d]"
+                    className="border-2 border-[#4e1b613d] rounded"
                     index={0}
                   />
+                  <InputOTPSeparator />
                   <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
+                    className="border-2 border-[#4e1b613d] rounded"
                     index={1}
                   />
+                  <InputOTPSeparator />
                   <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
+                    className="border-2 border-[#4e1b613d] rounded"
                     index={2}
                   />
+                  <InputOTPSeparator />
                   <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
+                    className="border-2 border-[#4e1b613d] rounded"
                     index={3}
                   />
                 </InputOTPGroup>
               </InputOTP>
-              <Button className="w-full">Submit</Button>
+              <span
+                className="cursor-pointer text-sm text-blue-500"
+                onClick={() => setToggle("number")}
+              >
+                Edit Phone Number
+              </span>
+              <Button className="w-full mt-1">Submit</Button>
             </form>
           </>
         ) : (
           <>
-            <form>
+            <form onSubmit={handlePasswordChange}>
               <div className="element sm:mb-3 mb-1">
                 <Label htmlFor="password" className=" sm:text-base text-xs">
                   Password

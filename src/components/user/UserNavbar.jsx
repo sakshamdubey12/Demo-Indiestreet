@@ -86,7 +86,7 @@ const UserNavbar = () => {
   };
 
   const filteredProducts = products?.filter((product) =>
-    product.name.toLowerCase().includes(searchInput)
+    product?.name?.toLowerCase().includes(searchInput)
   );
 
   return (
@@ -104,7 +104,7 @@ const UserNavbar = () => {
             (lastScroll
               ? "bg-[#ffffff8b] backdrop-blur md:py-1 py-1"
               : "bg-white md:py-2 py-1") +
-            ` !px-[5%] lower text-[#4E1B61] transition-all ease-in-out duration-200`
+            ` !px-[5%] lower text-[#4E1B61] transition-all ease-in-out duration-500`
           }
         >
           <div className="grid lg:grid-cols-7 md:grid-cols-4 grid-cols-6 !max-w-[100rem] !mx-auto lg:gap-3 md:gap-1 gap-0">
@@ -186,9 +186,9 @@ const UserNavbar = () => {
               }
             >
               <Command>
-                <div className="relative w-full md:top-3 sm:mt-0 mt-1 xl:w-full lg:w-[80%]">
+                <div className="relative w-full sm:mt-0 mt-1 xl:w-full lg:w-[80%]">
                   <CommandInput
-                    placeholder="Search..."
+                    placeholder="Search products..."
                     className="xl:w-full"
                     onFocus={() => setShowCommandList(true)}
                     onBlur={() =>
