@@ -28,7 +28,14 @@ export const VendorAPI = createApi({
         method: "PATCH",
       }),
     }),
+    updateVendor: builder.mutation({
+      query: ({ vendorID, data }) => ({
+        url: `/api/admin/vendor/verify-vendor/${vendorID}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetVendorDetailsQuery, useVerifyVendorMutation } = VendorAPI;
+export const { useGetVendorDetailsQuery, useVerifyVendorMutation, useUpdateVendorMutation } = VendorAPI;

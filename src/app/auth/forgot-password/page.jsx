@@ -1,195 +1,140 @@
 "use client";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useToast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import { useLoginMutation } from "@/redux/slices/common/authSlice";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken";
 
-const ForgotPassword = () => {
+const Login = () => {
+  const [emailOrPhoneNumber, setEmailOrPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [phoneError, setPhoneError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [login, { isLoading }] = useLoginMutation();
+  const router = useRouter();
   const { toast } = useToast();
-  const [toggle, setToggle] = useState("number");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!emailOrPhoneNumber) {
+      newErrors.emailOrPhoneNumber = "Email or Phone Number is required";
+    } else if (
+      !/^\S+@\S+\.\S+$/.test(emailOrPhoneNumber) &&
+      !/^\d{10}$/.test(emailOrPhoneNumber)
+    ) {
+      newErrors.emailOrPhoneNumber =
+        "Please enter a valid email or phone number";
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      const loginData = /^\S+@\S+\.\S+$/.test(emailOrPhoneNumber)
+        ? { email: emailOrPhoneNumber, password }
+        : { phoneNumber: emailOrPhoneNumber, password };
+      const response = await login(loginData).unwrap();
+      console.log(response.message);
+      if (response.success === true) {
+        const { token, ...userData } = response;
+        localStorage.setItem("userData", JSON.stringify(userData));
+        localStorage.setItem("isAuth", "true");
+        Cookies.set("token", token, { expires: 7 });
+        const decode = jwt.decode(token);
+        if (decode.role === "admin") {
+          router.push("/admin");
+        } else if (decode.role === "vendor") {
+          router.push("/vendor");
+        } else {
+          router.push("/");
+        }
+        toast({ title: response.message });
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        description: err.data.message || "something went wrong !",
+      });
+    }
+  };
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleToggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(
-      (prevShowConfirmPassword) => !prevShowConfirmPassword
-    );
-  };
-
-  const handlePhoneNumberChange = (value) => {
-    setPhoneNumber(value);
-    if (!/^\d+$/.test(value) && (value < 6000000000 || value > 9999999999)) {
-      setPhoneNumber("");
-    } else {
-      setPhoneNumber(value);
-    }
-  };
-
-  const handlePhoneNumberSubmit = (e) => {
-    e.preventDefault();
-    if (phoneError) {
-      alert("Please correct the phone number.");
-    } else if (phoneNumber.length == 10 && phoneNumber != "") {
-      console.log(phoneNumber);
-      setPhoneNumber("");
-      setToggle("otp");
-    } else {
-      toast({
-        variant: "destructive",
-        description: "Phone Number required",
-      });
-    }
-  };
-
   return (
     <div className="w-full h-screen frm flex justify-center items-center sm:px-6 px-3">
       <div className="form sm:p-8 p-4 rounded-md bg-white 2xl:w-[500px] xl:w-1/3 lg:w-2/5 md:w-3/5 sm:w-2/3 w-full shadow-[0_0_40px_rgba(78,27,97,0.15)] border border-[#4e1b6112]">
-        <h1 className="md:text-3xl text-2xl font-semibold text-[#4E1B61] sm:mb-3">
-          Forgot Password
+        <h1 className="md:text-3xl text-2xl font-semibold text-[#4E1B61] sm:mb-0.5">
+         Forget password 
         </h1>
-        {toggle === "number" ? (
-          <>
-            <form onSubmit={handlePhoneNumberSubmit}>
-              <Label htmlFor="number">
-                Enter phone number to change password
-              </Label>
-              <Input
-                name="number"
-                className="mb-2"
-                minLength={10}
-                maxLength={10}
-                value={phoneNumber}
-                onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                placeholder="Phone Number"
-              />
-              {phoneError && (
-                <p className="text-red-500 text-sm mb-2">{phoneError}</p>
-              )}
-              <Button type="submit" className="w-full">
-                Submit
-              </Button>
-            </form>
-            <Link href="/auth">Back to login</Link>
-          </>
-        ) : toggle === "otp" ? (
-          <>
-            <form>
-              <Label htmlFor="otp">
-                OTP has been sent to the entered phone number
-              </Label>
-              <InputOTP
-                name="otp"
-                maxLength={4}
-                pattern={REGEXP_ONLY_DIGITS}
-                className="mb-2"
-              >
-                <InputOTPGroup>
-                  <InputOTPSlot
-                    className="border-2 border-[#4e1b613d]"
-                    index={0}
-                  />
-                  <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
-                    index={1}
-                  />
-                  <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
-                    index={2}
-                  />
-                  <InputOTPSlot
-                    className="border-2 border-l-0 border-[#4e1b613d]"
-                    index={3}
-                  />
-                </InputOTPGroup>
-              </InputOTP>
-              <Button className="w-full">Submit</Button>
-            </form>
-          </>
-        ) : (
-          <>
-            <form>
-              <div className="element sm:mb-3 mb-1">
-                <Label htmlFor="password" className=" sm:text-base text-xs">
-                  Password
-                </Label>
-                <div className="pass flex relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    className={`outline-none mt-0.5 sm:text-base text-sm`}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleTogglePasswordVisibility}
-                    className="bg-white hover:bg-white text-black hover:text-black border-0 hover:border-0 absolute grid place-items-center right-1 top-1 h-9"
-                  >
-                    {showPassword ? (
-                      <EyeOffIcon className="w-[20px] h-[20px] absolute" />
-                    ) : (
-                      <EyeIcon className="w-[20px] h-[20px] absolute" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <div className="element sm:mb-3 mb-1">
-                <Label
-                  htmlFor="confirmPassword"
-                  className=" sm:text-base text-xs"
-                >
-                  Confirm Password
-                </Label>
-                <div className="pass flex relative">
-                  <Input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    placeholder="Confirm Password"
-                    className={`outline-none mt-0.5 sm:text-base text-sm`}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleToggleConfirmPasswordVisibility}
-                    className="bg-white hover:bg-white text-black hover:text-black border-0 hover:border-0 absolute grid place-items-center right-1 top-1 h-9"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOffIcon className="w-[20px] h-[20px] absolute" />
-                    ) : (
-                      <EyeIcon className="w-[20px] h-[20px] absolute" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <Button className="w-full">Submit</Button>
-            </form>
-          </>
-        )}
+        <p className="sm:mb-3 mb-1.5 sm:text-base text-sm">
+        Enter your email id to forget password .
+        </p>
+        <form className="sm:mb-5 mb-2.5" onSubmit={handleSubmit}>
+          <div className="element sm:mb-3 mb-1">
+            <Label
+              htmlFor="email"
+              className=" sm:text-base text-xs"
+            >
+              Email 
+            </Label>
+            <Input
+              type="text"
+              name="email"
+              placeholder="Email "
+              className={`outline-none mt-0.5 rounded sm:text-base text-sm`}
+              value={emailOrPhoneNumber}
+              onChange={(e) => setEmailOrPhoneNumber(e.target.value)}
+            />
+            {errors.emailOrPhoneNumber && (
+              <p className="text-xs text-red-500">
+                {errors.emailOrPhoneNumber}
+              </p>
+            )}
+          </div>
+
+          <div className="element sm:mb-3 mb-1">
+            <Button
+              type="submit"
+              className="w-full py-3.5"
+              variant="default"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Forget Password "}
+            </Button>
+          </div>
+        </form>
+        <div className="add-account sm:text-sm text-xs">
+          <p className="mb-1">
+            Didn't recieved the email ?{" "}
+            <Link href="/auth/user-signup" className="text-blue-600">
+              Send forget password link on email again .
+            </Link>
+          </p>
+   </div>
       </div>
       <Toaster />
     </div>
   );
 };
 
-export default ForgotPassword;
+export default Login;

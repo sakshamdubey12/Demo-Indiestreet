@@ -38,7 +38,7 @@ const VendorRegister = () => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://vrlqj94a70.execute-api.ap-south-1.amazonaws.com/api/admin/category/get-business-category"
+          "https://oqty3nvnrb.execute-api.ap-south-1.amazonaws.com/api/admin/category/get-business-category"
         );
         const data = await response.json();
         setCategories(data.data);
