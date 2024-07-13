@@ -22,7 +22,7 @@ const CustomerProfile = () => {
           <TabsTrigger value="account-details">Personal Details</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
-        <div className="content-container py-5 px-10">
+        <div className="content-container md:py-5 py-2 md:px-10 px-3">
           <TabsContent value="account-details">
             <CustomerDetail />
           </TabsContent>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/components/user/Header";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -115,15 +115,31 @@ const CustomerDetail = () => {
     setSavedAddress(savedAddress.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+    const persistData = localStorage.getItem("persist:userData");
+    console.log(JSON.parse(persistData));
+    if (persistData !== undefined) {
+      const parsedData = JSON.parse(persistData);
+      const userData = JSON.parse(parsedData.userData);
+      setEmail(userData.email)
+      setPhone(userData.phoneNumber)
+
+    }
+  }, []);
   return (
     <>
       <div className="personal-detail w-full mx-auto">
         <div className="header flex justify-between items-end">
           <Header title="Personal Details" className="pb-0" />
-          <Button onClick={handleLogout}>Logout</Button>
+          <Button
+            className="md:text-base text-sm px-4 py-2"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
         </div>
-        <div className="grid grid-cols-2 gap-6 p-4">
-          <div className="col-span-1">
+        <div className="grid md:grid-cols-2 grid-cols-1 md:gap-6 gap-2 p-4">
+          {/* <div className="">
             <Label className="block text-sm font-medium text-gray-700">
               Name
             </Label>
@@ -142,8 +158,8 @@ const CustomerDetail = () => {
                 <Pen className="w-4 h-4 text-gray-600" />
               </Button>
             </div>
-          </div>
-          <div className="col-span-1">
+          </div> */}
+          <div className="">
             <Label className="block text-sm font-medium text-gray-700">
               Email
             </Label>
@@ -163,7 +179,7 @@ const CustomerDetail = () => {
               </Button>
             </div>
           </div>
-          <div className="col-span-1">
+          <div className="">
             <Label className="block text-sm font-medium text-gray-700">
               Phone Number
             </Label>
@@ -189,18 +205,26 @@ const CustomerDetail = () => {
         </div>
         {(editName || editEmail || editPhone) && (
           <div className="col-span-1">
-            <Button onClick={handleEdit}>SAVE</Button>
+            <Button
+              className="md:text-base text-sm px-4 py-2"
+              onClick={handleEdit}
+            >
+              SAVE
+            </Button>
           </div>
         )}
       </div>
-      <div className=" w-full mx-auto my-5 h-px bg-[#4e1b613d]"></div>
+      {/* <div className=" w-full mx-auto my-5 h-px bg-[#4e1b613d]"></div> */}
       <div className="w-full mx-auto">
         <div className="flex justify-between items-center">
           <Header title="Saved Addresses" className=" mt-9" />
           <div className="mt-6 ml-9">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={() => setIsDialogOpen(true)}>
+                <Button
+                  className="md:text-base text-sm px-4 py-2"
+                  onClick={() => setIsDialogOpen(true)}
+                >
                   Add Address
                 </Button>
               </DialogTrigger>
@@ -302,17 +326,17 @@ const CustomerDetail = () => {
           >
             {savedAddress.map((address, index) => (
               <div
-                className="add-1 border flex justify-center items-start py-3 px-5 h-14"
+                className="add-1 border flex justify-between items-start py-3 px-5 h-14 relative"
                 key={index}
               >
                 <RadioGroupItem
-                  className="mr-3"
+                  className=""
                   value={`option-${index}`}
                   id={`option-${index}`}
                 />
                 <Label
                   htmlFor={`option-${index}`}
-                  className="w-full h-full mt-0.5"
+                  className="w-full h-full mt-0.5 absolute -top-0.5 left-0 pl-14 py-3"
                 >
                   {`${address.address}, ${address.city}, ${address.pincode}, ${address.state}, ${address.country}`}
                 </Label>
