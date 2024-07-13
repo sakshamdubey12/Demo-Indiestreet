@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { logout } from "@/redux/slices/common/authSlice";
 const CustomerDetail = () => {
   const [editName, setEditName] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
