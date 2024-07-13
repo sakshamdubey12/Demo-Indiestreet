@@ -1,23 +1,25 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useLoginMutation } from "@/redux/slices/common/authSlice";
 import Cookies from "js-cookie";
+import { useDispatch } from 'react-redux';
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { setAuth } from "@/redux/slices/common/authSlice";
 
 const Login = () => {
   const [emailOrPhoneNumber, setEmailOrPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
@@ -52,12 +54,10 @@ const Login = () => {
         ? { email: emailOrPhoneNumber, password }
         : { phoneNumber: emailOrPhoneNumber, password };
       const response = await login(loginData).unwrap();
-      console.log(response.message);
-      if (response.success === true) {
+      if (response.success) {
         const { token, ...userData } = response;
-        localStorage.setItem("userData", JSON.stringify(userData));
-        localStorage.setItem("isAuth", "true");
         Cookies.set("token", token, { expires: 7 });
+        dispatch(setAuth({ isAuth: true, userData })); 
         const decode = jwt.decode(token);
         if (decode.role === "admin") {
           router.push("/admin");
@@ -69,10 +69,9 @@ const Login = () => {
         toast({ title: response.message });
       }
     } catch (err) {
-      console.log(err);
       toast({
         variant: "destructive",
-        description: err.data.message || "something went wrong !",
+        description: err.data?.message || "Something went wrong!",
       });
     }
   };
@@ -102,7 +101,7 @@ const Login = () => {
               type="text"
               name="emailOrPhoneNumber"
               placeholder="Email or Phone Number"
-              className={`outline-none mt-0.5 rounded sm:text-base text-sm`}
+              className="outline-none mt-0.5 rounded sm:text-base text-sm"
               value={emailOrPhoneNumber}
               onChange={(e) => setEmailOrPhoneNumber(e.target.value)}
             />
@@ -121,7 +120,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
-                className={`outline-none mt-0.5 sm:text-base text-sm pr-10`}
+                className="outline-none mt-0.5 sm:text-base text-sm pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

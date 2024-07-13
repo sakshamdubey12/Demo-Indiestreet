@@ -10,6 +10,7 @@ import Link from "next/link";
 import { vendorSignup } from "@/redux/slices/vendor/vendorSlice";
 import { useDispatch } from "react-redux";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import Image from "next/image";
 
 const VendorRegister = () => {
   const [formData, setFormData] = useState({
@@ -216,10 +217,12 @@ const VendorRegister = () => {
                 <p className="text-xs text-red-500">{errors.addressProve}</p>
               )}
               {getPreviewUrl(formData.addressProve) && (
-                <img
+                <Image
+                  width={1000}
+                  height={1000}
                   src={getPreviewUrl(formData.addressProve)}
                   alt="Address Proof Preview"
-                  className="mt-2 w-full h-auto max-w-xs"
+                  className="mt-2 w-full h-auto max-w-28 object-cover"
                 />
               )}
             </div>
@@ -297,10 +300,12 @@ const VendorRegister = () => {
                 <p className="text-xs text-red-500">{errors.bankDoc}</p>
               )}
               {getPreviewUrl(formData.bankDoc) && (
-                <img
+                <Image
+                width={1000}
+                height={1000}
                   src={getPreviewUrl(formData.bankDoc)}
                   alt="Bank Document Preview"
-                  className="mt-2 w-full h-auto max-w-xs"
+                  className="mt-2 w-full h-auto max-w-28 object-cover"
                 />
               )}
             </div>
@@ -336,10 +341,12 @@ const VendorRegister = () => {
                 <p className="text-xs text-red-500">{errors.gstDoc}</p>
               )}
               {getPreviewUrl(formData.gstDoc) && (
-                <img
+                <Image 
+                width={1000}
+                height={1000}
                   src={getPreviewUrl(formData.gstDoc)}
                   alt="GST Document Preview"
-                  className="mt-2 w-full h-auto max-w-xs"
+                  className="mt-2 w-full h-auto max-w-28 object-cover"
                 />
               )}
             </div>

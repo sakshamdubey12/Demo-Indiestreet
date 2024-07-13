@@ -94,6 +94,8 @@ const ProductInfo = ({ params }) => {
     setIsInCart(!isInCart);
   };
 
+  console.log(data?.response);
+
   if (isLoading) {
     return <ProductPage />;
   }
@@ -161,14 +163,14 @@ const ProductInfo = ({ params }) => {
               <div className="rating flex text-gray-600/95 items-center">
                 <FaStar className=" mr-1.5 text-yellow-500" />
                 <span className=" font-medium mt-0.5 md:text-base text-sm">
-                  {data?.response?.rating}
+                  {data?.response?.averageRating}
                 </span>{" "}
               </div>
               <span className=" bg-gray-600/70 w-0.5 h-7 block mx-5 rounded-full"></span>
               <div className="review flex items-center text-gray-600/95">
                 <span className=" mr-1 font-medium mt-0.5 md:text-base text-sm">
-                  {data?.response?.reviews?.length > 0
-                    ? data?.response?.reviews?.length
+                  {data?.response?.numberOfReviews > 0
+                    ? data?.response?.reviews?.numberOfReviews
                     : 0}{" "}
                   Reviews
                 </span>
@@ -294,25 +296,27 @@ const ProductInfo = ({ params }) => {
             </Dialog>
           </div>
           <div>
-            {isLoading?<>loading...</>:data.response.allReviews && data.response.allReviews.map((review, index) => (
-              <div className="review-card shadow-none" key={index}>
-                <Card className="w-full py-3 px-5">
-                  <div className="info flex items-center justify-between md:mb-3 sm:mb-2">
-                    <div className="user flex items-center">
-                      <Avatar className="mr-2.5">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                      </Avatar>
-                      <h1 className="font-medium">{review.fullName}</h1>
-                    </div>
-                    <div className="rating flex text-gray-600/95 items-center">
-                      <FaStar className=" mr-1.5 text-yellow-500" />
-                      <span className=" font-semibold mt-0.5">
-                        {review.rating}
-                      </span>{" "}
-                    </div>
-                  </div>
-                  {/* <div
+            {data?.response?.allReviews?.length > 0 ? (
+              <>
+                {data?.response?.allReviews?.map((review, index) => (
+                  <div className="review-card shadow-none" key={index}>
+                    <Card className="w-full py-3 px-5">
+                      <div className="info flex items-center justify-between md:mb-3 sm:mb-2">
+                        <div className="user flex items-center">
+                          <Avatar className="mr-2.5">
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>CN</AvatarFallback>
+                          </Avatar>
+                          <h1 className="font-medium">{review.fullName}</h1>
+                        </div>
+                        <div className="rating flex text-gray-600/95 items-center">
+                          <FaStar className=" mr-1.5 text-yellow-500" />
+                          <span className=" font-semibold mt-0.5">
+                            {review.rating}
+                          </span>{" "}
+                        </div>
+                      </div>
+                      {/* <div
                     className={
                       (review.images.length > 0 ? "flex mb-2 " : "hidden ") +
                       "images text-gray-600"
@@ -333,13 +337,18 @@ const ProductInfo = ({ params }) => {
                       </div>
                     ))}
                   </div> */}
-                  <CardDescription className="text-gray-600">
-                    {review.review}
-                  </CardDescription>
-                </Card>
-              </div>
- 
- ))}
+                      <CardDescription className="text-gray-600">
+                        {review.review}
+                      </CardDescription>
+                    </Card>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <p>No reviews yet</p>
+              </>
+            )}
           </div>
           {/* <div className="review-card shadow-none">
             <Card className="w-full py-3 px-5">
@@ -375,7 +384,7 @@ const ProductInfo = ({ params }) => {
           <div className="spec-cont w-full">
             <Table className="w-full text-gray-600 sm:text-sm text-xs">
               <TableBody>
-                {data?.response?.specs[0]?.split(",").map((spec, index) => {
+                {/* {data?.response?.specs[0]?.split(",").map((spec, index) => {
                   const [key, value] = spec.split(":");
                   return (
                     <TableRow key={index}>
@@ -385,7 +394,7 @@ const ProductInfo = ({ params }) => {
                       <TableCell className="w-full">{value}</TableCell>
                     </TableRow>
                   );
-                })}
+                })} */}
               </TableBody>
             </Table>
           </div>

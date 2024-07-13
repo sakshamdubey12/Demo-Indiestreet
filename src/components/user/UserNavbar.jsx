@@ -2,16 +2,8 @@
 import Link from "next/link";
 import { HeartIcon, ShoppingCartIcon, User2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from 'react-redux';
 import { useRouter } from "next/navigation";
-import { logout } from "@/redux/slices/common/authSlice";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +17,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 import {
   Command,
@@ -37,13 +28,10 @@ import {
 import { useGetProductsByCategoryQuery } from "@/redux/slices/user/GetAllProduct";
 import { useGetProductCategoryQuery } from "@/redux/slices/admin/ProductCategorySlice";
 import Image from "next/image";
-import { useSelector } from "react-redux";
 
 const UserNavbar = () => {
   const [lastScroll, setLastScroll] = useState(0);
   const [toggle, setToggle] = useState(true);
-  const [isAuth, setIsAuth] = useState(false);
-  const [email, setEmail] = useState(null);
   const [visibleCategories, setVisibleCategories] = useState([]);
   const [hiddenCategories, setHiddenCategories] = useState([]);
   const containerRef = useRef(null);
@@ -55,20 +43,10 @@ const UserNavbar = () => {
   const cartLength = useSelector((state) => state.cart.length);
   const wishlistLength = useSelector((state) => state.wishlist.length);
   const { data: products } = useGetProductsByCategoryQuery();
-
-  useEffect(() => {
-    const authStatus = localStorage.getItem("isAuth") === "true";
-    setIsAuth(authStatus);
-
-    const storedUserData = JSON.parse(localStorage.getItem("userData"));
-    if (storedUserData && storedUserData.email) {
-      setEmail(storedUserData.email);
-    }
-
+  const isAuth = useSelector((state) => state.authData.isAuth);
+  useEffect(() => { 
     const handleScroll = () => {
       const scrollHeight = window.scrollY;
-      // console.log(scrollHeight);
-      // console.log(scrollHeight > 102);
       setLastScroll(scrollHeight > 102);
     };
 
@@ -103,18 +81,12 @@ const UserNavbar = () => {
     };
   }, [windowWidth, data]);
 
-  const handleLogout = () => {
-    logout();
-    setIsAuth(false);
-    router.push("/");
-  };
-
   const handleSearchChange = (e) => {
     setSearchInput(e.target.value.toLowerCase());
   };
 
   const filteredProducts = products?.filter((product) =>
-    product.name.toLowerCase().includes(searchInput)
+    product?.name?.toLowerCase().includes(searchInput)
   );
 
   return (
@@ -132,7 +104,7 @@ const UserNavbar = () => {
             (lastScroll
               ? "bg-[#ffffff8b] backdrop-blur md:py-1 py-1"
               : "bg-white md:py-2 py-1") +
-            ` !px-[5%] lower text-[#4E1B61] transition-all ease-in-out duration-200`
+            ` !px-[5%] lower text-[#4E1B61] transition-all ease-in-out duration-500`
           }
         >
           <div className="grid lg:grid-cols-7 md:grid-cols-4 grid-cols-6 !max-w-[100rem] !mx-auto lg:gap-3 md:gap-1 gap-0">
@@ -214,9 +186,9 @@ const UserNavbar = () => {
               }
             >
               <Command>
-                <div className="relative w-full md:top-3 sm:mt-0 mt-1 xl:w-full lg:w-[80%]">
+                <div className="relative w-full sm:mt-0 mt-1 xl:w-full lg:w-[80%]">
                   <CommandInput
-                    placeholder="Search..."
+                    placeholder="Search products..."
                     className="xl:w-full"
                     onFocus={() => setShowCommandList(true)}
                     onBlur={() =>
@@ -348,26 +320,6 @@ const UserNavbar = () => {
                     />
                   </Link>
                 ) : (
-                  // <DropdownMenu>
-                  //   <DropdownMenuTrigger
-                  //     className={
-                  //       (lastScroll ? " " : "") +
-                  //       "ml-0.5 flex justify-center items-center rounded-full border-[#4E1B61] duration-150 ease-in-out transition-all outline-none"
-                  //     }
-                  //   >
-                  //     <User2Icon
-                  //       fill="#4E1B61"
-                  //       className=" sm:w-5 sm:h-5 w-3.5 h-3.5"
-                  //     />
-                  //   </DropdownMenuTrigger>
-                  //   <DropdownMenuContent className=" bg-white sm:text-sm text-xs w-44">
-                  //     <DropdownMenuLabel>{email}</DropdownMenuLabel>
-                  //     <DropdownMenuSeparator />
-                  //     <DropdownMenuItem onClick={handleLogout}>
-                  //       Logout
-                  //     </DropdownMenuItem>
-                  //   </DropdownMenuContent>
-                  // </DropdownMenu>
                   <Link
                     href="/auth"
                     className={

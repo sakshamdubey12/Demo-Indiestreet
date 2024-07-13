@@ -1,29 +1,72 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import Cookies from 'js-cookie';
+import { createSlice } from "@reduxjs/toolkit";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import Cookies from "js-cookie";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
+const initialAuthState = {
+  isAuth: false,
+  userData: null,
+};
+
+const getInitialState = () => {
+  if (typeof window !== "undefined") {
+    const storedData = localStorage.getItem("persist:userData");
+    if (storedData) {
+      return JSON.parse(storedData);
+    }
+  }
+  return initialAuthState;
+};
+
+const authDataSlice = createSlice({
+  name: "authData",
+  initialState: getInitialState(),
+  reducers: {
+    setAuth: (state, action) => {
+      state.isAuth = action.payload.isAuth;
+      state.userData = action.payload.userData;
+      console.log(state.userData);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "persist:userData",
+          JSON.stringify({ isAuth: state.isAuth, userData: state.userData })
+        );
+      }
+    },
+    clearAuth: (state) => {
+      state.isAuth = false;
+      state.userData = null;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("persist:userData");
+      }
+      Cookies.remove("token");
+    },
+  },
+});
+
+export const { setAuth, clearAuth } = authDataSlice.actions;
+
 export const authSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: "authApi",
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
-        url: '/common/login',
-        method: 'POST',
+        url: "/common/login",
+        method: "POST",
         body: credentials,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          if (data.success === true) {
+          if (data.success) {
             const { token, ...userData } = data;
-            localStorage.setItem("userData", JSON.stringify(userData));
-            localStorage.setItem("isAuth", "true");
             Cookies.set("token", token, { expires: 7 });
+            dispatch(setAuth({ isAuth: true, userData }));
           }
         } catch (error) {
           console.log("Login failed", error);
@@ -32,44 +75,20 @@ export const authSlice = createApi({
     }),
     registerUser: builder.mutation({
       query: (user) => ({
-        url: '/user/auth/signup',
-        method: 'POST',
+        url: "/user/auth/signup",
+        method: "POST",
         body: user,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          if (data.success === true) {
+          if (data.success) {
             const { token, ...userData } = data;
-            localStorage.setItem("userData", JSON.stringify(userData));
-            localStorage.setItem("isAuth", "true");
             Cookies.set("token", token, { expires: 7 });
-          }
-        } catch (error) {
-          console.log("Registration failed", error);
-        }
-      },
-    }),
-    registerVendor: builder.mutation({
-      query: (vendor) => ({
-        url: '/vendor/auth/register',
-        method: 'POST',
-        body: vendor,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }),
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data.success === true) {
-            const { token, ...userData } = data;
-            localStorage.setItem("userData", JSON.stringify(userData));
-            localStorage.setItem("isAuth", "true");
-            Cookies.set("token", token, { expires: 7 });
+            dispatch(setAuth({ isAuth: true, userData }));
           }
         } catch (error) {
           console.log("Registration failed", error);
@@ -79,14 +98,13 @@ export const authSlice = createApi({
   }),
 });
 
-export const {
-  useLoginMutation,
-  useRegisterUserMutation,
-  useRegisterVendorMutation,
-} = authSlice;
+export const { useLoginMutation, useRegisterUserMutation } = authSlice;
 
-export const logout = () => {
-  localStorage.removeItem("userData");
-  localStorage.setItem("isAuth", "false");
-  Cookies.remove("token");
+export const logout = () => (dispatch) => {
+  dispatch(clearAuth());
 };
+
+export const selectIsAuth = (state) => state.authData.isAuth;
+export const selectUserData = (state) => state.authData.userData;
+
+export default authDataSlice.reducer;
