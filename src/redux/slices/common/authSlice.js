@@ -26,6 +26,7 @@ const authDataSlice = createSlice({
     setAuth: (state, action) => {
       state.isAuth = action.payload.isAuth;
       state.userData = action.payload.userData;
+      console.log(state.userData);
       if (typeof window !== "undefined") {
         localStorage.setItem(
           "persist:userData",
