@@ -107,7 +107,7 @@ const VendorRegister = () => {
       console.log(err);
       toast({
         variant: "destructive",
-        description: err.data.message || "something went wrong !",
+        description: err.message || "something went wrong !",
       });
     }
   };

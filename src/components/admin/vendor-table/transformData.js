@@ -1,3 +1,4 @@
+import { verify } from "jsonwebtoken";
 
 export const transformData = (data) => {
   return data?.map((item) => {
@@ -12,6 +13,7 @@ console.log(item);
       phoneNumber: item.phoneNumber,
       businessName: item.businessName,
       businessCategory: item.businessCategory,
+      verify:item.isVerified,
       pan: item.pan,
       gst: item.gst,
       accountProof,
