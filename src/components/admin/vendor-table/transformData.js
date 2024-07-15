@@ -5,7 +5,6 @@ export const transformData = (data) => {
     const accountProof = item.files?.[0]?.url || "";
     const addressProof = item.files?.[1]?.url || "";
     const gstProof = item.files?.[2]?.url || "";
-console.log(item);
     return {
       vendorId : item.vendorId,
       fullname: item.fullname,

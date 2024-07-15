@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "../ui/textarea";
-
+import Image from "next/image"; // Correct import for Next.js Image component
 
 import {
   Select,
@@ -18,7 +18,6 @@ import { useUploadProductMutation } from "@/redux/slices/vendor/ProductUpload";
 import { toast } from "react-toastify";
 
 const ProductUpload = ({ onSuccess }) => {
-
   const { data: categoryData } = useGetProductCategoryQuery();
 
   const [uploadProduct] = useUploadProductMutation();
@@ -82,13 +81,13 @@ const ProductUpload = ({ onSuccess }) => {
     });
     formData.append("speciality", speciality);
 
-
     try {
       const response = await uploadProduct(formData).unwrap();
-console.log(response);
-      toast({ title: response.message },{
-        position:'top-right',autoClose: 5000,type:'success'
-      });
+      console.log(response);
+      toast(
+        { title: response.message },
+        { position: "top-right", autoClose: 5000, type: "success" }
+      );
       setProductName("");
       setProductDescription("");
       setPrice("");
@@ -99,11 +98,11 @@ console.log(response);
       setImages([]);
       setSpeciality("");
       setErrors({});
-      onSuccess();   
+      onSuccess();
     } catch (error) {
       toast({
         variant: "destructive",
-        description: error.data.message || "error occured",
+        description: error.data.message || "error occurred",
       });
     }
   };
@@ -189,8 +188,8 @@ console.log(response);
         {images.map((image, index) => (
           <div key={index} className="relative m-2">
             <Image
-            height={1000}
-            width={1000}
+              height={1000}
+              width={1000}
               src={URL.createObjectURL(image)}
               alt="Preview"
               className="w-20 h-20 object-cover"
@@ -223,7 +222,7 @@ console.log(response);
           <p className="text-red-500 text-xs">{errors.speciality}</p>
         )}
       </div>
-   
+
       <div className="flex mb-2">
         <div className="element mr-1 w-1/2">
           <Label>Product Category</Label>
@@ -259,7 +258,7 @@ console.log(response);
           )}
         </div>
       </div>
-      <Button type="submit" className=" w-full">
+      <Button type="submit" className="w-full">
         Add Product
       </Button>
     </form>
