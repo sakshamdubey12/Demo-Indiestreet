@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 import { Label } from "@/components/ui/label";
 import {
   InputOTP,
@@ -22,7 +21,9 @@ const Verification = () => {
           Verify Account
         </h1>
         <>
-        <p className="text-blue-600 text-sm">Verification link has been sent to your gmail</p>
+          <p className="text-blue-600 text-sm">
+            Verification link has been sent to your gmail
+          </p>
           <form>
             <Label htmlFor="otp">
               OTP has been sent to <span className="text-blue-500"></span>
@@ -61,7 +62,6 @@ const Verification = () => {
           </form>
         </>
       </div>
-      <Toaster />
     </div>
   );
 };

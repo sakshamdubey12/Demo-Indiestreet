@@ -130,8 +130,6 @@ const Products = ({ params }) => {
     setWishlistIDs(ids);
   }, [wishlistItems]);
 
-  console.log(products);
-
   return (
     <section className="px-[5%] md:py-16 sm:py-8 py-5 mx-auto max-w-[100rem]">
       <div className="filter flex items-end justify-between md:mb-4 sm:mb-3 mb-2 border-b-2">
@@ -180,60 +178,65 @@ const Products = ({ params }) => {
           </Select>
         </div>
       </div>
-
-      <div className="products-listing grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 sm:gap-2">
-        {isLoading ? (
-          <>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-[0_0_10px_rgba(78,27,97,0.20)] transition-shadow duration-1000 p-0 rounded overflow-hidden cursor-pointer border m-0 animate-pulse"
-              >
-                <CardHeader className="p-0 relative top-0 space-y-0">
-                  <div className="icons absolute top-3 right-3 flex flex-col justify-center items-center">
-                    <div className="py-2.5 px-2.5 rounded-full text-sm bg-gray-300 mb-2"></div>
+      <>
+        {filterByCategory(products)?.length > 0 ? (
+          <div className="products-listing grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 sm:gap-2">
+            {isLoading ? (
+              <>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Card
+                    key={index}
+                    className="hover:shadow-[0_0_10px_rgba(78,27,97,0.20)] transition-shadow duration-1000 p-0 rounded overflow-hidden cursor-pointer border m-0 animate-pulse"
+                  >
+                    <CardHeader className="p-0 relative top-0 space-y-0">
+                      <div className="icons absolute top-3 right-3 flex flex-col justify-center items-center">
+                        <div className="py-2.5 px-2.5 rounded-full text-sm bg-gray-300 mb-2"></div>
+                      </div>
+                      <div className="w-full h-56 bg-gray-300 rounded-lg"></div>
+                      <div className="absolute bottom-0 py-2 text-sm bg-gray-300 w-full"></div>
+                    </CardHeader>
+                    <CardContent className="p-2">
+                      <div className="text-sm mb-2 line-clamp-2 font-normal bg-gray-300 h-6 w-3/4"></div>
+                      <CardDescription className="flex flex-col items-baseline">
+                        <span className="mb-1 flex items-center">
+                          <span className="text-base font-medium text-red-600 mr-1.5 bg-gray-300 h-5 w-10"></span>
+                          <span className="line-through text-sm mr-3 bg-gray-300 h-5 w-10"></span>
+                          <span className="bg-gray-300 h-5 w-10"></span>
+                        </span>
+                        <span className="flex items-center w-full text-sm mb-2">
+                          <span className="flex mr-1.5">
+                            <FaStar className="mr-1 mt-0.5 text-gray-300" />
+                            <span className="font-semibold bg-gray-300 h-6 w-8"></span>
+                          </span>
+                          <span className="block w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></span>
+                          <span className="font-medium underline bg-gray-300 h-6 w-16"></span>
+                        </span>
+                      </CardDescription>
+                      <CardFooter className="flex">
+                        <div className="w-1/2 !text-sm bg-gray-300 h-10 mr-2 py-2.5"></div>
+                        <div className="w-1/2 !text-sm bg-gray-300 h-10 py-2.5"></div>
+                      </CardFooter>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            ) : (
+              <>
+                {filterByCategory(products).map((product) => (
+                  <div
+                    className="card-container sm:scale-100 scale-95"
+                    key={product.id}
+                  >
+                    <ProductCard product={product} />
                   </div>
-                  <div className="w-full h-56 bg-gray-300 rounded-lg"></div>
-                  <div className="absolute bottom-0 py-2 text-sm bg-gray-300 w-full"></div>
-                </CardHeader>
-                <CardContent className="p-2">
-                  <div className="text-sm mb-2 line-clamp-2 font-normal bg-gray-300 h-6 w-3/4"></div>
-                  <CardDescription className="flex flex-col items-baseline">
-                    <span className="mb-1 flex items-center">
-                      <span className="text-base font-medium text-red-600 mr-1.5 bg-gray-300 h-5 w-10"></span>
-                      <span className="line-through text-sm mr-3 bg-gray-300 h-5 w-10"></span>
-                      <span className="bg-gray-300 h-5 w-10"></span>
-                    </span>
-                    <span className="flex items-center w-full text-sm mb-2">
-                      <span className="flex mr-1.5">
-                        <FaStar className="mr-1 mt-0.5 text-gray-300" />
-                        <span className="font-semibold bg-gray-300 h-6 w-8"></span>
-                      </span>
-                      <span className="block w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></span>
-                      <span className="font-medium underline bg-gray-300 h-6 w-16"></span>
-                    </span>
-                  </CardDescription>
-                  <CardFooter className="flex">
-                    <div className="w-1/2 !text-sm bg-gray-300 h-10 mr-2 py-2.5"></div>
-                    <div className="w-1/2 !text-sm bg-gray-300 h-10 py-2.5"></div>
-                  </CardFooter>
-                </CardContent>
-              </Card>
-            ))}
-          </>
+                ))}
+              </>
+            )}
+          </div>
         ) : (
-          <>
-            {filterByCategory(products).map((product) => (
-              <div
-                className="card-container sm:scale-100 scale-95"
-                key={product.id}
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </>
+          <div className=" w-full h-80 flex justify-center items-center lg:text-7xl text-5xl font-semibold text-[#4e1b61b1] z-10">No products available</div>
         )}
-      </div>
+      </>
     </section>
   );
 };

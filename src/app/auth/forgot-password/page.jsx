@@ -51,7 +51,10 @@ const ForgotPassword = () => {
   const handlePhoneNumberSubmit = (e) => {
     e.preventDefault();
     if (phoneError) {
-      alert("Please correct the phone number.");
+      toast({
+        variant: "destructive",
+        description: "Please correct the phone number.",
+      });
     } else if (phoneNumber.length == 10 && phoneNumber != "") {
       setToggle("otp");
     } else {
@@ -235,7 +238,6 @@ const ForgotPassword = () => {
           </>
         )}
       </div>
-      <Toaster />
     </div>
   );
 };

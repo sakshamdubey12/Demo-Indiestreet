@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import StylishHeader from "./StylishHeader";
 import { Card, CardContent } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -36,7 +35,7 @@ const Style = () => {
           {items.map((item, index) => (
             <Link href="/" key={index}>
               <div
-                className="rounded-lg overflow-hidden text-2xl font-medium text-center relative before:w-full before:h-full before:absolute before:transition-all before:ease-in-out before:duration-150 hover:before:bg-[#0000005d] lg:w-80 lg:h-96 md:h-80 sm:h-72 h-48 w-full flex-shrink-0 flex justify-center items-center md:mx-2 sm:mx-1 mx-0.5 cursor-pointer group"
+                className="rounded-lg overflow-hidden text-2xl font-medium text-center relative before:w-full before:h-full before:absolute before:transition-all before:ease-in-out before:duration-150 hover:before:bg-[#0000005d] xl:w-72 lg:w-80 lg:h-96 md:h-80 sm:h-72 h-48 w-full flex-shrink-0 flex justify-center items-center md:mx-2 sm:mx-1 mx-0.5 cursor-pointer group"
                 style={{ borderRadius: "10px" }}
                 //  md:w-56  sm:w-44 w-36
               >

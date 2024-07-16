@@ -4,11 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 import Link from "next/link";
 import { useLoginMutation } from "@/redux/slices/common/authSlice";
 import Cookies from "js-cookie";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -57,7 +56,7 @@ const Login = () => {
       if (response.success) {
         const { token, ...userData } = response;
         Cookies.set("token", token, { expires: 7 });
-        dispatch(setAuth({ isAuth: true, userData })); 
+        dispatch(setAuth({ isAuth: true, userData }));
         const decode = jwt.decode(token);
         if (decode.role === "admin") {
           router.push("/admin");
@@ -158,10 +157,11 @@ const Login = () => {
               Sign Up
             </Link>
           </p>
-          <Link href="/auth/forgot-password" className="text-blue-500">Forgot Password?</Link>
+          <Link href="/auth/forgot-password" className="text-blue-500">
+            Forgot Password?
+          </Link>
         </div>
       </div>
-      <Toaster />
     </div>
   );
 };

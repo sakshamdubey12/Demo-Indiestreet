@@ -7,6 +7,7 @@ import { ProductAPI } from "./slices/vendor/ProductUpload";
 import { GetProductAPI } from "./slices/user/GetAllProduct";
 import { GetProductByIdAPI } from "./slices/user/GetSingleProduct";
 import { reviewsApi } from "./slices/user/ProductReview";
+import { addressApi } from "./slices/user/addressSlice";
 import dialogReducer from "./slices/common/dialogSlice";
 import sortReducer from "./slices/user/productFilterSortSlice";
 import cartReducer from "./slices/user/cartSlice";
@@ -26,6 +27,7 @@ const applyMiddlewareConditionally = (middlewares) => {
   const isGetProductApiEnabled = true;
   const isGetProductByIdApiEnabled = true;
   const isReviewsApiEnabled = true;
+  const isAddressApiEnabled = true; // Added this line
 
   if (isAuthEnabled) {
     middlewares.push(authSlice.middleware);
@@ -50,6 +52,9 @@ const applyMiddlewareConditionally = (middlewares) => {
   }
   if (isReviewsApiEnabled) {
     middlewares.push(reviewsApi.middleware);
+  }
+  if (isAddressApiEnabled) {
+    middlewares.push(addressApi.middleware); // Added this line
   }
 
   return middlewares;
@@ -91,6 +96,7 @@ const rootReducer = combineReducers({
   [GetProductAPI.reducerPath]: GetProductAPI.reducer,
   [GetProductByIdAPI.reducerPath]: GetProductByIdAPI.reducer,
   [reviewsApi.reducerPath]: reviewsApi.reducer,
+  [addressApi.reducerPath]: addressApi.reducer, // Added this line
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

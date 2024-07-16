@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductPage = () => {
+const ProductPageSkeleton = () => {
   return (
     <section className="px-[7%] py-14 mx-auto max-w-[100rem]">
       <div className="product-info grid xl:grid-cols-4 lg:grid-cols-5 grid-cols-1 lg:gap-10 gap-5 mb-16 relative">
@@ -81,4 +81,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default ProductPageSkeleton;
