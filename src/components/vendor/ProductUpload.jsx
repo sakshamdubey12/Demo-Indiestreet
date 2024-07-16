@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "../ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image"; // Correct import for Next.js Image component
 
 import {
   Select,
@@ -16,10 +15,9 @@ import {
 } from "../ui/select";
 import { useGetProductCategoryQuery } from "@/redux/slices/admin/ProductCategorySlice";
 import { useUploadProductMutation } from "@/redux/slices/vendor/ProductUpload";
-import Image from "next/image";
+import { toast } from "react-toastify";
 
 const ProductUpload = ({ onSuccess }) => {
-  const { toast } = useToast();
   const { data: categoryData } = useGetProductCategoryQuery();
 
   const [uploadProduct] = useUploadProductMutation();
@@ -27,11 +25,10 @@ const ProductUpload = ({ onSuccess }) => {
   const [productDescription, setProductDescription] = useState("");
   const [price, setPrice] = useState("");
   const [offer, setOffer] = useState("");
-
+  const [weight, setWeight] = useState("");
   const [productCategory, setProductCategory] = useState("");
   const [stocks, setStocks] = useState("");
   const [images, setImages] = useState([]);
-  const [weight, setWeight] = useState("");
   const [speciality, setSpeciality] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -47,17 +44,6 @@ const ProductUpload = ({ onSuccess }) => {
     setImages(newImages);
   };
 
-  const handleAddWeight = () => {
-    if (weight) {
-      setWeight(weight);
-      setWeight("");
-    }
-  };
-
-  const handleRemoveWeight = (index) => {
-    setWeight("");
-  };
-
   const validate = () => {
     const newErrors = {};
     if (!productName) newErrors.productName = "Product Name is required";
@@ -65,11 +51,11 @@ const ProductUpload = ({ onSuccess }) => {
       newErrors.productDescription = "Product Description is required";
     if (!price) newErrors.price = "Price is required";
     if (!offer) newErrors.offer = "Offer is required";
+    if (!weight) newErrors.weight = "Weight is required";
     if (!productCategory)
       newErrors.productCategory = "Product Category is required";
     if (!stocks) newErrors.stocks = "Stocks is required";
     if (images.length < 1) newErrors.images = "At least one image is required";
-    if (!weight) newErrors.weight = "Weight is required";
     if (!speciality) newErrors.speciality = "Speciality is required";
     return newErrors;
   };
@@ -87,32 +73,36 @@ const ProductUpload = ({ onSuccess }) => {
     formData.append("description", productDescription);
     formData.append("price", price);
     formData.append("offer", offer);
+    formData.append("weight", weight);
     formData.append("productCategory", productCategory);
     formData.append("stocks", stocks);
     images.forEach((image, index) => {
       formData.append("images", image);
     });
     formData.append("speciality", speciality);
-    formData.append("weight", weight);
 
     try {
       const response = await uploadProduct(formData).unwrap();
-      toast({ title: response.message });
+      console.log(response);
+      toast(
+        { title: response.message },
+        { position: "top-right", autoClose: 5000, type: "success" }
+      );
       setProductName("");
       setProductDescription("");
       setPrice("");
       setOffer("");
+      setWeight("");
       setProductCategory("");
       setStocks("");
       setImages([]);
-      setWeight("");
       setSpeciality("");
       setErrors({});
       onSuccess();
     } catch (error) {
       toast({
         variant: "destructive",
-        description: err.data.message || "error occurred",
+        description: error.data.message || "error occurred",
       });
     }
   };
@@ -181,14 +171,25 @@ const ProductUpload = ({ onSuccess }) => {
             <p className="text-red-500 text-xs">{errors.images}</p>
           )}
         </div>
-
+        <div className="element">
+          <Label>Weight</Label>
+          <Input
+            placeholder="Weight in KG"
+            className="mb-2"
+            value={weight}
+            onChange={(e) => setWeight(e.target.value)}
+          />
+          {errors.weight && (
+            <p className="text-red-500 text-xs">{errors.weight}</p>
+          )}
+        </div>
       </div>
       <div className="flex flex-wrap">
         {images.map((image, index) => (
           <div key={index} className="relative m-2">
             <Image
-            height={1000}
-            width={1000}
+              height={1000}
+              width={1000}
               src={URL.createObjectURL(image)}
               alt="Preview"
               className="w-20 h-20 object-cover"
@@ -221,18 +222,7 @@ const ProductUpload = ({ onSuccess }) => {
           <p className="text-red-500 text-xs">{errors.speciality}</p>
         )}
       </div>
-      <div className="element mb-2">
-        <Label>Weight (in KG)</Label>
-        <Input
-          placeholder="Weight in KG"
-          className="mb-2"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-        />
-        {errors.weight && (
-          <p className="text-red-500 text-xs">{errors.weight}</p>
-        )}
-      </div>
+
       <div className="flex mb-2">
         <div className="element mr-1 w-1/2">
           <Label>Product Category</Label>
@@ -268,7 +258,7 @@ const ProductUpload = ({ onSuccess }) => {
           )}
         </div>
       </div>
-      <Button type="submit" className=" w-full">
+      <Button type="submit" className="w-full">
         Add Product
       </Button>
     </form>

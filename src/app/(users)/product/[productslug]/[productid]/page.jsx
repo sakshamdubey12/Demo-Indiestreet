@@ -72,10 +72,10 @@ const ProductInfo = ({ params }) => {
     }
     try {
       await postReview({ productId: id, reviewData }).unwrap();
-      console.log("Review posted successfully!");
+      toast({description:"Review posted successfully"})
       setReviewData({ rating: "", review: "" });
     } catch (error) {
-      console.error("Failed to post review:", error);
+      toast({description:`Failed to post review: ${error}`})
     }
   };
 
@@ -305,8 +305,6 @@ const ProductInfo = ({ params }) => {
                         {isLoading ? "Submitting..." : "Add Review"}
                       </Button>
                     </form>
-                    {isSuccess && <p>Review posted successfully!</p>}
-                    {isError && <p>Failed to post review. Please try again.</p>}
                   </div>
                 </DialogHeader>
               </DialogContent>

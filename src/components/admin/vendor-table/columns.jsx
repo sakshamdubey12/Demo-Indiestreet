@@ -7,6 +7,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDispatch, useSelector } from "react-redux";
+import { useUpdateVendorMutation } from "@/redux/slices/admin/GetAllVendor";
 
 export const columns = [
   {
@@ -142,11 +144,22 @@ export const columns = [
     header: () => <p className="w-16 text-center">Verify</p>,
     cell: ({ row }) => {
       console.log(row);
-     return <div className="flex items-center justify-center w-16">
-        <button className="p-2 text-[#4E1B61] rounded">
-          <CheckCircle2Icon />
-        </button>
-      </div>
+      const [updateVendor, { isLoading }] = useUpdateVendorMutation();
+      const handleVerifyClick = () => {
+        updateVendor({ vendorID: row.original.vendorId, data: { verified: true } });
+      };
+
+      return (
+        <div className="flex items-center justify-center w-16">
+          <button
+            className="p-2 text-[#4E1B61] rounded"
+            onClick={handleVerifyClick}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : row.original.verify ? "Verified" : "Verify"}
+          </button>
+        </div>
+      );
     },
   },
 ];

@@ -38,7 +38,7 @@ const VendorRegister = () => {
     const fetchCategories = async () => {
       try {
         const response = await fetch(
-          "https://vrlqj94a70.execute-api.ap-south-1.amazonaws.com/api/admin/category/get-business-category"
+          "https://oqty3nvnrb.execute-api.ap-south-1.amazonaws.com/api/admin/category/get-business-category"
         );
         const data = await response.json();
         setCategories(data.data);
@@ -106,7 +106,7 @@ const VendorRegister = () => {
       console.log(err);
       toast({
         variant: "destructive",
-        description: err.data.message || "something went wrong !",
+        description: err.message || "something went wrong !",
       });
     }
   };

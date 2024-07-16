@@ -22,13 +22,14 @@ export const VendorAPI = createApi({
     getVendorDetails: builder.query({
       query: () => "/admin/vendor/vendors-details",
     }),
-    verifyVendor: builder.mutation({
-      query: (vendorID) => ({
+    updateVendor: builder.mutation({
+      query: ({ vendorID, data }) => ({
         url: `/admin/vendor/verify-vendor/${vendorID}`,
         method: "PATCH",
+        body: data,
       }),
     }),
   }),
 });
 
-export const { useGetVendorDetailsQuery, useVerifyVendorMutation } = VendorAPI;
+export const { useGetVendorDetailsQuery, useVerifyVendorMutation, useUpdateVendorMutation } = VendorAPI;
