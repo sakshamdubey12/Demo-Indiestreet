@@ -177,7 +177,8 @@ const ProductUpdate = ({ params }) => {
             <label className="block text-sm font-medium text-gray-700">Images</label>
             {formData.images.map((image, index) => (
               <div key={index} className="mt-2">
-                <img src={image} alt={`Product ${index + 1}`} className="h-24 w-24 object-cover"/>
+                <Image     width={1000}
+              height={1000} src={image} alt={`Product ${index + 1}`} className="h-24 w-24 object-cover"/>
                 <input
                   type="file"
                   onChange={(e) => handleImageChange(e, index)}

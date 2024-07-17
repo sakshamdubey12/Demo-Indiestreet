@@ -53,7 +53,7 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card className="hover:shadow-[0_0_10px_rgba(78,27,97,0.20)] transition-shadow duration-200 p-0 rounded overflow-hidden cursor-pointer border m-0 md:h-[21rem] h-[18rem]">
+    <Card className="hover:shadow-[0_0_10px_rgba(78,27,97,0.20)] transition-shadow duration-200 p-0 rounded overflow-hidden cursor-pointer border m-0 md:h-[21rem] sm:h-[20rem] h-[18rem]">
       <CardHeader className="p-0 relative top-0 space-y-0">
         <div className="icons absolute top-3 right-3 flex flex-col justify-center items-center">
           <button

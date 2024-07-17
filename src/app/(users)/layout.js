@@ -1,5 +1,6 @@
-import UserNavbar from "@/components/user/UserNavbar";
-import UserFooter from "@/components/user/Userfooter";
+const UserFooter = lazy(() => import("@/components/user/Userfooter"));
+const UserNavbar = lazy(() => import("@/components/user/UserNavbar"));
+import { lazy, Suspense } from "react";
 
 export const metadata = {
   title: "IndieStreet",
@@ -9,9 +10,11 @@ export const metadata = {
 export default function UserLayout({ children }) {
   return (
     <main className="min-h-screen flex flex-col">
-      <UserNavbar />
-      <div className="flex-grow">{children}</div>
-      <UserFooter />
+      <Suspense fallback={null}>
+        <UserNavbar />
+        <div className="flex-grow">{children}</div>
+        <UserFooter />
+      </Suspense>
     </main>
   );
 }

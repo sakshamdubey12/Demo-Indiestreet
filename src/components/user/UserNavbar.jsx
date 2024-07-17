@@ -245,7 +245,7 @@ const UserNavbar = () => {
                       >
                         <HeartIcon
                           fill="#4E1B61"
-                          className="sm:w-5 w-4 sm:h-5 h-4"
+                          className="w-5 h-5"
                         />
                         {wishlistLength > 0 ? (
                           <span
@@ -284,7 +284,7 @@ const UserNavbar = () => {
                       >
                         <ShoppingCartIcon
                           fill="#4E1B61"
-                          className="sm:w-5 w-4 sm:h-5 h-4"
+                          className="w-5 h-5"
                         />
                         {cartLength > 0 ? (
                           <span
@@ -316,7 +316,7 @@ const UserNavbar = () => {
                   >
                     <User2Icon
                       fill="#4E1B61"
-                      className=" sm:w-5 sm:h-5 w-3.5 h-3.5"
+                      className=" w-5 h-5"
                     />
                   </Link>
                 ) : (

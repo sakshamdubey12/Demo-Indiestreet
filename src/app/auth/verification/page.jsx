@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 import { Label } from "@/components/ui/label";
 import {
   InputOTP,
@@ -106,7 +105,6 @@ const Verification = () => {
           </Button>
         </form>
       </div>
-      <Toaster />
     </div>
   );
 };

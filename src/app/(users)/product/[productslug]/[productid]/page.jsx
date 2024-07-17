@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { FaStar } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useGetProductsByIDQuery } from "@/redux/slices/user/GetSingleProduct";
@@ -35,25 +36,33 @@ import { addToCart, removeFromCart } from "@/redux/slices/user/cartSlice";
 import { useSelector, useDispatch } from "react-redux";
 import Image from "next/image";
 import { IoHeartDislikeSharp } from "react-icons/io5";
-import ProductPage from "@/components/user/skeleton/ProductPage";
+import ProductPageSkeleton from "@/components/user/skeleton/ProductPageSkeleton";
+import { useRouter } from "next/navigation";
 
 const ProductInfo = ({ params }) => {
-  const id =  params.productid
+  const router = useRouter()
+  const { toast } = useToast();
+  const isAuth = useSelector((state) => state.authData.isAuth);
+  const id = params.productid;
   const dispatch = useDispatch();
   const wishlist = useSelector((state) => state.wishlist);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const cart = useSelector((state) => state.cart);
   const [isInCart, setIsInCart] = useState(false);
-  const [reviewData, setReviewData] = useState({ rating: "", review: "" ,productId:""});
+  const [reviewData, setReviewData] = useState({
+    rating: "",
+    review: "",
+    productId: "",
+  });
   const [postReview, { isLoading: reviewLoading, isSuccess, isError }] =
-  usePostReviewMutation();
+    usePostReviewMutation();
   const { data, error, isLoading, refetch } = useGetProductsByIDQuery(id);
   console.log(data?.response.allReviews);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setReviewData((prevData) => ({ ...prevData, [name]: value }));
   };
-  reviewData.productId= params.productid;
+  reviewData.productId = params.productid;
   const handleSubmit = async (e) => {
     e.preventDefault();
     const ratingValue = Number(reviewData.rating);
@@ -62,11 +71,11 @@ const ProductInfo = ({ params }) => {
       return;
     }
     try {
-      await postReview({productId:id, reviewData }).unwrap();
-      console.log("Review posted successfully!");
+      await postReview({ productId: id, reviewData }).unwrap();
+      toast({description:"Review posted successfully"})
       setReviewData({ rating: "", review: "" });
     } catch (error) {
-      console.error("Failed to post review:", error);
+      toast({description:`Failed to post review: ${error}`})
     }
   };
 
@@ -94,10 +103,15 @@ const ProductInfo = ({ params }) => {
     setIsInCart(!isInCart);
   };
 
-  console.log(data?.response);
+  const handleAddReviewClick = () => {
+    if (!isAuth) {
+      router.push("/auth")
+      toast({ title: "Unauthorized" });
+    } 
+  };
 
   if (isLoading) {
-    return <ProductPage />;
+    return <ProductPageSkeleton />;
   }
   return (
     <section className="px-[5%] md:py-16 sm:py-8 py-5 mx-auto max-w-[100rem]">
@@ -258,7 +272,10 @@ const ProductInfo = ({ params }) => {
               className="block text-end mb-0 pb-0"
             />
             <Dialog>
-              <DialogTrigger className="sm:text-sm text-xs border px-3 py-2 rounded bg-[#4e1b61] text-white">
+              <DialogTrigger
+                onClick={handleAddReviewClick}
+                className="sm:text-sm text-xs border px-3 py-2 rounded bg-[#4e1b61] text-white"
+              >
                 Add Review
               </DialogTrigger>
               <DialogContent className="bg-white">
@@ -288,8 +305,6 @@ const ProductInfo = ({ params }) => {
                         {isLoading ? "Submitting..." : "Add Review"}
                       </Button>
                     </form>
-                    {isSuccess && <p>Review posted successfully!</p>}
-                    {isError && <p>Failed to post review. Please try again.</p>}
                   </div>
                 </DialogHeader>
               </DialogContent>

@@ -7,7 +7,7 @@ import CustomerDetail from "@/components/user/CustomerDetail";
 const CustomerProfile = () => {
   return (
     <>
-      <div className="porfile-page px-[5%] py-[3%]">
+      <div className="porfile-page px-[5%] py-[3%] mx-auto max-w-[100rem]">
       <div className="flex justify-center my-5">
         <Avatar className="h-32 w-32">
           <AvatarImage src="https://github.com/shadcn.png" />
