@@ -86,8 +86,7 @@ export const authSlice = createApi({
         try {
           const { data } = await queryFulfilled;
           if (data.success) {
-            const { token, ...userData } = data;
-            Cookies.set("token", token, { expires: 7 });
+            localStorage.setItem("userDetails", JSON.stringify(userData)); // Store user details in localStorage
             dispatch(setAuth({ isAuth: true, userData }));
           }
         } catch (error) {
@@ -95,10 +94,19 @@ export const authSlice = createApi({
         }
       },
     }),
+    verifyOtp: builder.mutation({
+      query: ({ email, otp }) => ({
+        url: '/user/auth/verify-otp',
+        method: 'POST',
+        body: { email, otp },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }),
   }),
-});
-
-export const { useLoginMutation, useRegisterUserMutation } = authSlice;
+})
+})
+export const { useLoginMutation, useRegisterUserMutation,useVerifyOtpMutation  } = authSlice;
 
 export const logout = () => (dispatch) => {
   dispatch(clearAuth());
