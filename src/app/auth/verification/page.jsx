@@ -90,7 +90,7 @@ const Verification = () => {
                 index={3}
               />
               <InputOTPSeparator />
-              <InputOTPSlot
+              <InputOTPSlot 
                 className="border-2 border-[#4e1b613d] rounded"
                 index={4}
               />
