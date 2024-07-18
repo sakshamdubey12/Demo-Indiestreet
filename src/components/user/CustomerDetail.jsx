@@ -43,7 +43,7 @@ const CustomerDetail = () => {
     const persistData = localStorage.getItem("persist:userData");
     if (persistData) {
       const parsedData = JSON.parse(persistData);
-      const userData = JSON.parse(parsedData.userData);
+      const userData = JSON.parse(parsedData.userData) ;
       setEmail(userData.email);
       setPhone(userData.phoneNumber);
     }

@@ -15,8 +15,9 @@ import wishlistReducer from "./slices/user/wishlistSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import authReducer from './slices/vendor/vendorSlice';
 import storage from "redux-persist/lib/storage";
-import authDataReducer from "./slices/common/authSlice"; 
+import authDataReducer from "./slices/common/authSlice";
 import productReducer from "./slices/vendor/manageProduct";
+import { authApi } from "./slices/user/authSlice";
 
 const applyMiddlewareConditionally = (middlewares) => {
   const isAuthEnabled = true;
@@ -28,6 +29,7 @@ const applyMiddlewareConditionally = (middlewares) => {
   const isGetProductByIdApiEnabled = true;
   const isReviewsApiEnabled = true;
   const isAddressApiEnabled = true; // Added this line
+  const isAuthApiEnabled = true; // Added this line
 
   if (isAuthEnabled) {
     middlewares.push(authSlice.middleware);
@@ -55,6 +57,9 @@ const applyMiddlewareConditionally = (middlewares) => {
   }
   if (isAddressApiEnabled) {
     middlewares.push(addressApi.middleware); // Added this line
+  }
+  if (isAuthApiEnabled) {
+    middlewares.push(authApi.middleware)
   }
 
   return middlewares;
@@ -97,6 +102,7 @@ const rootReducer = combineReducers({
   [GetProductByIdAPI.reducerPath]: GetProductByIdAPI.reducer,
   [reviewsApi.reducerPath]: reviewsApi.reducer,
   [addressApi.reducerPath]: addressApi.reducer, // Added this line
+  [authApi.reducerPath]: authApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

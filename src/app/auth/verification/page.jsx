@@ -33,10 +33,10 @@ const Verification = () => {
     try {
       const response = await verifyOtp({ email, otp }).unwrap();
       console.log(response);
-      if (response.status === 200) {
+      if (response.success) {
         localStorage.removeItem("userDetails");
-        toast({ title: "Verification successful!" });
-        router.push("/login");
+        toast({ variant: "success", description:response.message|| "Verification successful!" });
+        router.push("/auth");
       }
     } catch (err) {
       console.error("Verification failed:", err);

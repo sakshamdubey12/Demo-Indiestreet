@@ -151,14 +151,16 @@ export const columns = [
 
       return (
         <div className="flex items-center justify-center w-16">
-          <button
-            className="p-2 text-[#4E1B61] rounded"
-            onClick={handleVerifyClick}
-            disabled={isLoading}
-          >
-            {isLoading ? "Loading..." : row.original.verify ? "Verified" : "Verify"}
-          </button>
-        </div>
+        <button
+          className={`p-2 rounded transition-colors duration-300 ${
+            row.original.verify ? 'bg-[#4E1B61] text-white' : 'bg-gray-300 text-gray-700'
+          }`}
+          onClick={handleVerifyClick}
+          disabled={!isLoading}
+        >
+          { row.original.verify ? "Enabled" : "Disabled"}
+        </button>
+      </div>
       );
     },
   },
