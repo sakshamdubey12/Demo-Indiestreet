@@ -2,10 +2,13 @@ import React from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { selectCartSubtotal } from "@/redux/slices/user/cartSlice";
+import { useSelector } from "react-redux";
 
-const CheckoutDetail = ({ subtotal , onCheckout }) => {
+const CheckoutDetail = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const subtotal = useSelector(selectCartSubtotal);
 
   const handleCheckOut = () => {
     const persistData = localStorage.getItem("persist:userData");
@@ -13,9 +16,7 @@ const CheckoutDetail = ({ subtotal , onCheckout }) => {
       const parsedData = JSON.parse(persistData);
       const isAuth = JSON.parse(parsedData.isAuth);
       if (isAuth === true) {
-        // toast({ title: "checkout successfull!!" });
-        onCheckout(true);
-        // router.push("/");
+        router.push("/checkout/address");
       } else {
         toast({ title: "Login to checkout" });
         router.push("/auth");

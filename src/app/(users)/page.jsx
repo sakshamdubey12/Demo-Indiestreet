@@ -26,6 +26,7 @@ const Home = () => {
       getLocation();
     }
   }, [isAuth]);
+  console.log(location);
 
   function getLocation() {
     if (navigator.geolocation) {

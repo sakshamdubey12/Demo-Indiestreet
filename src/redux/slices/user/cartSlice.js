@@ -62,6 +62,17 @@ const cartSlice = createSlice({
   },
 });
 
+export const selectCartSubtotal = (state) => {
+  const subtotal = state.cart.reduce((subtotal, product) => {
+    return (
+      subtotal +
+      (product.price - product.price * (product.offer / 100)) * product.quantity
+    );
+  }, 0);
+
+  return Math.round(subtotal * 100) / 100;
+};
+
 export const {
   addToCart,
   removeFromCart,
@@ -69,6 +80,6 @@ export const {
   decreaseQuantity,
   clearCart,
   removeItem,
-  updateQuantity, 
+  updateQuantity,
 } = cartSlice.actions;
 export default cartSlice.reducer;
