@@ -67,10 +67,11 @@ const UserRegister = () => {
       const userData = { fullname: fullName, email, phoneNumber, password };
       const response = await registerUser(userData).unwrap();
       toast({ title: response.message });
-      const { pass, ...data } = userData;
+      const { password: pass, ...data } = userData;
       dispatch(setAuth({ isAuth: true, data }));
-      Cookies.set("token", response.token, { expires: 7 });
-      router.push("/");
+
+      localStorage.setItem("userDetails", JSON.stringify(data)); 
+      router.push("/auth/verification");
     } catch (err) {
       console.log(err);
       toast({
@@ -208,31 +209,19 @@ const UserRegister = () => {
               <p className="text-xs text-red-500">{errors.confirmPassword}</p>
             )}
           </div>
-          <div className="element sm:mb-3 mb-1">
-            <Button
-              type="submit"
-              className="w-full py-3.5"
-              variant="default"
-              disabled={isLoading}
-            >
-              {isLoading ? "Loading..." : "Register"}
-            </Button>
-          </div>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Registering..." : "Register"}
+          </Button>
         </form>
-        <div className="add-account sm:text-sm text-xs">
-          <p className="mb-1">
-            Already have an account?{" "}
-            <Link href="/auth" className="text-blue-600">
-              Login
-            </Link>
-          </p>
-          <p>
-            Signup as Vendor
-            <Link href="/auth/vendor-signup" className="text-blue-600 ml-2">
-              Signup
-            </Link>
-          </p>
-        </div>
+        <p className="sm:text-base text-xs text-[#7F8691]">
+          Already have an account?{" "}
+          <Link
+            href="/user/auth/login"
+            className="sm:text-base text-xs font-semibold text-[#4E1B61]"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
