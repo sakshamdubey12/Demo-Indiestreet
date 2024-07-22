@@ -1,57 +1,51 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import {
-  useRegisterUserMutation,
-  setAuth,
-} from "@/redux/slices/common/authSlice";
-import { useDispatch } from "react-redux";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { signupUser } from '@/redux/slices/user/userSignupSLice';
 
 const UserRegister = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullname, setfullname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const [registerUser, { isLoading }] = useRegisterUserMutation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    setErrors({});
-  }, [fullName, email, phoneNumber, password, confirmPassword]);
+  const loading = useSelector((state) => state.signup.loading);
+  const error = useSelector((state) => state.signup.error);
 
   const validate = () => {
     const newErrors = {};
-    if (!fullName) newErrors.fullName = "Full Name is required";
+    if (!fullname) newErrors.fullname = 'Full Name is required';
     if (!email) {
-      newErrors.email = "Email is required";
+      newErrors.email = 'Email is required';
     } else if (!/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = "Please enter a valid email";
+      newErrors.email = 'Please enter a valid email';
     }
     if (!phoneNumber) {
-      newErrors.phoneNumber = "Phone Number is required";
+      newErrors.phoneNumber = 'Phone Number is required';
     } else if (!/^\d{10}$/.test(phoneNumber)) {
-      newErrors.phoneNumber = "Please enter a valid phone number";
+      newErrors.phoneNumber = 'Please enter a valid phone number';
     }
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = 'Password is required';
     } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
+      newErrors.password = 'Password must be at least 6 characters long';
     }
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = 'Passwords do not match';
     }
     return newErrors;
   };
@@ -63,22 +57,25 @@ const UserRegister = () => {
       setErrors(validationErrors);
       return;
     }
-    try {
-      const userData = { fullname: fullName, email, phoneNumber, password };
-      const response = await registerUser(userData).unwrap();
-      toast({ title: response.message });
-      const { password: pass, ...data } = userData;
-      dispatch(setAuth({ isAuth: true, data }));
-
-      localStorage.setItem("userDetails", JSON.stringify(data)); 
-      router.push("/auth/verification");
-    } catch (err) {
-      console.log(err);
-      toast({
-        variant: "destructive",
-        description: err.data.message || "something went wrong !",
+    const userData = { fullname, email, phoneNumber, password };
+    dispatch(signupUser(userData))
+      .unwrap()
+      .then((response) => {
+        console.log(response);
+        toast({
+          description: response.message,
+          status: 'success',
+        });
+        router.push('/auth/verification');
+      })
+      .catch((err) => {
+        console.log(err);
+        toast({
+          title: 'Error',
+          description: err.message || "something went wrong !",
+          status: 'error',
+        });
       });
-    }
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -102,19 +99,19 @@ const UserRegister = () => {
         </p>
         <form className="sm:mb-5 mb-2.5" onSubmit={handleSubmit}>
           <div className="element sm:mb-3 mb-1">
-            <Label htmlFor="fullName" className=" sm:text-base text-xs">
+            <Label htmlFor="fullname" className=" sm:text-base text-xs">
               Full Name
             </Label>
             <Input
               type="text"
-              name="fullName"
+              name="fullname"
               placeholder="Full Name"
               className={`outline-none mt-0.5 rounded sm:text-base text-sm`}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={fullname}
+              onChange={(e) => setfullname(e.target.value)}
             />
-            {errors.fullName && (
-              <p className="text-xs text-red-500">{errors.fullName}</p>
+            {errors.fullname && (
+              <p className="text-xs text-red-500">{errors.fullname}</p>
             )}
           </div>
           <div className="element sm:mb-3 mb-1">
@@ -157,7 +154,7 @@ const UserRegister = () => {
             </Label>
             <div className="pass flex relative">
               <Input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="Password"
                 className={`outline-none mt-0.5 sm:text-base text-sm`}
@@ -186,7 +183,7 @@ const UserRegister = () => {
             </Label>
             <div className="pass flex relative">
               <Input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPassword"
                 placeholder="Confirm Password"
                 className={`outline-none mt-0.5 sm:text-base text-sm`}
@@ -209,12 +206,12 @@ const UserRegister = () => {
               <p className="text-xs text-red-500">{errors.confirmPassword}</p>
             )}
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Registering..." : "Register"}
+          <Button type="submit" className="w-full">
+            {loading ? 'Loading...' : 'Register'}
           </Button>
         </form>
         <p className="sm:text-base text-xs text-[#7F8691]">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link
             href="/user/auth/login"
             className="sm:text-base text-xs font-semibold text-[#4E1B61]"

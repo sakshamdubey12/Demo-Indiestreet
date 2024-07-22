@@ -5,23 +5,22 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { useLoginMutation } from "@/redux/slices/common/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { setAuth } from "@/redux/slices/common/authSlice";
+import { loginUser } from "@/redux/slices/user/userSignupSLice";
 
 const Login = () => {
   const [emailOrPhoneNumber, setEmailOrPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const validate = () => {
     const newErrors = {};
@@ -52,25 +51,32 @@ const Login = () => {
       const loginData = /^\S+@\S+\.\S+$/.test(emailOrPhoneNumber)
         ? { email: emailOrPhoneNumber, password }
         : { phoneNumber: emailOrPhoneNumber, password };
-      const response = await login(loginData).unwrap();
+      const response = await dispatch(loginUser(loginData)).unwrap();
+      console.log("API Response:", response);
+
       if (response.success) {
-        const { token, ...userData } = response;
+        const { token, role } = response;
         Cookies.set("token", token, { expires: 7 });
-        dispatch(setAuth({ isAuth: true, userData }));
-        const decode = jwt.decode(token);
-        if (decode.role === "admin") {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user.role === "admin") {
           router.push("/admin");
-        } else if (decode.role === "vendor") {
+        } else if (user.role === "vendor") {
           router.push("/vendor");
         } else {
           router.push("/");
         }
         toast({ title: response.message });
+      } else {
+        toast({
+          variant: "destructive",
+          description: response.message || "Login failed!",
+        });
       }
     } catch (err) {
+      console.error("Login error:", err);
       toast({
         variant: "destructive",
-        description: err.data?.message || "Something went wrong!",
+        description: err?.message || "Something went wrong!",
       });
     }
   };
@@ -144,9 +150,9 @@ const Login = () => {
               type="submit"
               className="w-full py-3.5"
               variant="default"
-              disabled={isLoading}
+              disabled={loading}
             >
-              {isLoading ? "Loading..." : "Login"}
+              {loading ? "Loading..." : "Login"}
             </Button>
           </div>
         </form>

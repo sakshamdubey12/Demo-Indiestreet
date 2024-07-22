@@ -12,37 +12,48 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Button } from "@/components/ui/button";
 
 import { useRouter } from "next/navigation";
-import { useVerifyOtpMutation } from "@/redux/slices/common/authSlice";
+import { useDispatch } from "react-redux";
+import { verifyOTP } from "@/redux/slices/user/userSignupSLice";
+import { Input } from "@/components/ui/input";
+
 
 const Verification = () => {
-  const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState("");
-  const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
-  const { toast } = useToast();
-  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const dispatch = useDispatch();
+  const router = useRouter()
 
+const { toast } = useToast();
   useEffect(() => {
-    const userDetails = JSON.parse(localStorage.getItem("userDetails"));
-    if (userDetails && userDetails.email) {
-      setEmail(userDetails.email);
+    const storedEmail = localStorage.getItem('email');
+    if (storedEmail) {
+      setEmail(storedEmail);
     }
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleVerify = async(e) => {
+    e.preventDefault()
     try {
-      const response = await verifyOtp({ email, otp }).unwrap();
-      console.log(response);
-      if (response.success) {
-        localStorage.removeItem("userDetails");
-        toast({ variant: "success", description:response.message|| "Verification successful!" });
-        router.push("/auth");
+      const resp = await    dispatch(verifyOTP({ email, otp }));
+      console.log(resp);
+      if (resp.payload.success) {
+        router.push("/auth")
+        toast({
+          description: resp.payload.message,
+          status: 'success'
+        });
+      }else{
+        toast({
+          description: resp.payload.message,
+          status: 'warning',
+        });
+        
       }
-    } catch (err) {
-      console.error("Verification failed:", err);
+    } catch (error) {
+      console.log(error);
       toast({
-        variant: "destructive",
-        description: err.data?.message || "Something went wrong!",
+        description: resp.payload.message,
+        status: 'error',
       });
     }
   };
@@ -56,10 +67,21 @@ const Verification = () => {
         <p className="text-blue-600 text-sm">
           Verification link has been sent to your email
         </p>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleVerify}>
           <Label htmlFor="otp">
             OTP has been sent to <span className="text-blue-500">{email}</span>
           </Label>
+          <h1>Verify OTP</h1>
+      {!localStorage.getItem('email') && (
+        <div>
+          <label>Email:</label>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+      )}
           <InputOTP
             name="otp"
             maxLength={6}
@@ -100,8 +122,8 @@ const Verification = () => {
               />
             </InputOTPGroup>
           </InputOTP>
-          <Button type="submit" className="w-full mt-1" disabled={isLoading}>
-            {isLoading ? "Verifying..." : "Verify"}
+          <Button type="submit" className="w-full mt-1">
+          Verify
           </Button>
         </form>
       </div>

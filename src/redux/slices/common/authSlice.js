@@ -73,40 +73,10 @@ export const authSlice = createApi({
         }
       },
     }),
-    registerUser: builder.mutation({
-      query: (user) => ({
-        url: "/user/auth/signup",
-        method: "POST",
-        body: user,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data.success) {
-            localStorage.setItem("userDetails", JSON.stringify(userData)); // Store user details in localStorage
-            dispatch(setAuth({ isAuth: true, userData }));
-          }
-        } catch (error) {
-          console.log("Registration failed", error);
-        }
-      },
-    }),
-    verifyOtp: builder.mutation({
-      query: ({ email, otp }) => ({
-        url: '/user/auth/verify-otp',
-        method: 'POST',
-        body: { email, otp },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }),
-  }),
+
 })
 })
-export const { useLoginMutation, useRegisterUserMutation,useVerifyOtpMutation  } = authSlice;
+export const { useLoginMutation } = authSlice;
 
 export const logout = () => (dispatch) => {
   dispatch(clearAuth());
