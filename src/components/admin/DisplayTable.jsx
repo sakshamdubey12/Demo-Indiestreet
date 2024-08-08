@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../ui/use-toast";
 import { Textarea } from "../ui/textarea";
+import { ToggleLeft, ToggleLeftIcon, ToggleRight, ToggleRightIcon } from "lucide-react";
 
 const DisplayTable = ({
   category,
@@ -33,6 +34,7 @@ const DisplayTable = ({
   delete: deleteCategoryHook,
   update,
   inactive,
+  active
 }) => {
   const [businessCategory, setBusinessCategory] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -49,6 +51,7 @@ const DisplayTable = ({
   const [deleteCategory, { isLoading: isDeleting }] = deleteCategoryHook();
   const [updateCategory, { isLoading: isUpdating }] = update();
   const [markCategoryInactive, { isLoading: isInactivating }] = inactive();
+  const [markCategoryActive, { isLoading: isActivating }] = active();
 
   useEffect(() => {
     if (data) {
@@ -115,6 +118,27 @@ const DisplayTable = ({
       });
     }
   };
+  const handleMarkCategoryActive = async () => {
+    if (!selectedCategoryId) return;
+    console.log(selectedCategoryId);
+    try {
+      await markCategoryActive(selectedCategoryId).unwrap();
+      toast({
+        title: "Success",
+        description: "Category successfully marked Active",
+        duration: 3000,
+      });
+      refetch();
+      closeDialog();
+    } catch (error) {
+      console.error("Failed to mark category Active:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark category Active",
+        duration: 3000,
+      });
+    }
+  };
 
   const handleDeleteCategory = async () => {
     if (!selectedCategoryId) return;
@@ -173,7 +197,7 @@ const DisplayTable = ({
               {category === "product" && (
                 <TableCell>{cat.description}</TableCell>
               )}
-              <TableCell>{cat.isActive ? "Active" : "Inactive"}</TableCell>
+              <TableCell>{cat.isActive ? <ToggleRightIcon onClick={() => openDialog("inactive", cat._id)}/> : <ToggleLeftIcon onClick={() => openDialog("active", cat._id)}/>}</TableCell>
               <TableCell>
                 {new Date(cat.createdAt).toLocaleDateString("en-GB", {
                   day: "numeric",
@@ -290,6 +314,28 @@ const DisplayTable = ({
               disabled={isInactivating}
             >
               {isInactivating ? "Inactivating..." : "Inactive"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Active Dialog */}
+      <Dialog open={dialogType === "active"} onOpenChange={closeDialog}>
+        <DialogContent className=" bg-white">
+          <DialogHeader>
+            <DialogTitle>
+              Are you sure you want to mark this category Active?
+            </DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+            <Button className=" bg-white text-black" onClick={closeDialog}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleMarkCategoryActive}
+              disabled={isActivating}
+            >
+              {isActivating ? "Activating..." : "Active"}
             </Button>
           </DialogFooter>
         </DialogContent>

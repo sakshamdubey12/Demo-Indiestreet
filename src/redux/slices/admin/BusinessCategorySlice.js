@@ -59,6 +59,12 @@ export const BusinessCategory = createApi({
         method: 'PATCH',
       }),
     }),
+    markCategoryActive: builder.mutation({
+      query: (categoryId) => ({
+        url: `/admin/category/active-business-category/${categoryId}`,
+        method: 'PATCH',
+      }),
+    }),
   }),
 });
 
@@ -68,4 +74,5 @@ export const {
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
   useMarkCategoryInactiveMutation,
+  useMarkCategoryActiveMutation,
 } = BusinessCategory;

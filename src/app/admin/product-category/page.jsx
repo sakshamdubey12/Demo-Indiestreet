@@ -6,6 +6,7 @@ import {
   useDeleteProductCategoryMutation,
   useUpdateProductCategoryMutation,
   useMarkProductCategoryInactiveMutation,
+  useMarkProductCategoryActiveMutation,
 } from "@/redux/slices/admin/ProductCategorySlice";
 import DisplayTable from "@/components/admin/DisplayTable";
 import PageTitle from "@/components/common/PageTitle";
@@ -105,6 +106,7 @@ const Categories = (props) => {
         delete={useDeleteProductCategoryMutation}
         update={useUpdateProductCategoryMutation}
         inactive={useMarkProductCategoryInactiveMutation}
+        active={useMarkProductCategoryActiveMutation}
       />
     </section>
   );

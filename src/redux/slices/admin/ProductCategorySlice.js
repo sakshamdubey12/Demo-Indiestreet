@@ -59,6 +59,12 @@ export const ProductCategory = createApi({
         method: 'PATCH',
       }),
     }),
+    markProductCategoryActive: builder.mutation({
+      query: (categoryId) => ({
+        url: `/admin/category/inactive-product-category/${categoryId}`,
+        method: 'PATCH',
+      }),
+    }),
   }),
 });
 
@@ -68,4 +74,5 @@ export const {
   useDeleteProductCategoryMutation,
   useUpdateProductCategoryMutation,
   useMarkProductCategoryInactiveMutation,
+  useMarkProductCategoryActiveMutation,
 } = ProductCategory;

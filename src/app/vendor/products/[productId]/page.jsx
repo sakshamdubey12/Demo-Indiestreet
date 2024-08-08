@@ -190,6 +190,7 @@ const ProductUpdate = ({ params }) => {
           </div>
           <button
             type="submit"
+            onClick={handleSubmit}
             className="bg-[#4e1b61] text-white px-4 py-2 rounded-md mt-4"
           >
             Save Changes

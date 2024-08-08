@@ -6,6 +6,7 @@ import {
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
   useMarkCategoryInactiveMutation,
+  useMarkCategoryActiveMutation,
 } from "@/redux/slices/admin/BusinessCategorySlice";
 import DisplayTable from "@/components/admin/DisplayTable";
 import PageTitle from "@/components/common/PageTitle";
@@ -86,6 +87,7 @@ const Categories = () => {
         delete={useDeleteCategoryMutation}
         update={useUpdateCategoryMutation}
         inactive={useMarkCategoryInactiveMutation}
+        active={useMarkCategoryActiveMutation}
       />
     </section>
   );
